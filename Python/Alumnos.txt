@@ -1,0 +1,2 @@
+V-33 , nico , nico@gmail.com , Curso , 20.0
+V-12 , Oscar , oscar@gmail.com , Bootcamp , 14.0 , 20.0 , 10.0

@@ -1,4 +1,5 @@
-from Python.Primer_Entregable_Clase_SGA import Programa_Academico, Alumno, Profesor
+from python.Primer_Entregable_Clase_SGA import Alumno, Profesor, Programa_Academico, AlumnoCurso, AlumnoBootcamp,AlumnoDiplomado
+
 import os
 os.system('cls')
 
@@ -56,7 +57,12 @@ def recibir_Alumnostxt():
             curso = fila[3]
 
             notas = [float(nota) for nota in fila[4:]]
-            usuario = Alumno(cedula, nombre, email, curso, notas) 
+            if curso.lower() == 'curso':
+                usuario = AlumnoCurso(cedula,nombre,email,Programa_Academico.Curso,notas)
+            elif curso.lower() == 'diplomado':
+                usuario = AlumnoDiplomado(cedula,nombre,email,Programa_Academico.Diplomado,notas)
+            if curso.lower() == 'bootcamp':
+                usuario = AlumnoBootcamp(cedula,nombre,email,Programa_Academico.Bootcamp,notas)
             lista_obj.append(usuario)
 
         
@@ -107,13 +113,22 @@ while opcion != '7':
 
     match (opcion):
         case '1':
+            usuario = None
             os.system('cls')
             cedula = input('Ingrese la cedula del alumno: ')
             nombre = input('Ingrese el nombre del alumno: ')
             correo = input('Ingrese el correo del alumno: ')
-            programa = input('Ingrese el nombre del programa academico del alumno: ').lower()
 
-            usuario = Alumno(cedula, nombre,correo,programa)
+            os.system('cls')
+            print('->Curso -- 1\n->Diplomado -- 2\n->Bootcamp -- 3\n')
+            programa = Programa_Academico(int(input('Ingrese la opcion: ')))
+
+            if programa == Programa_Academico.Curso:
+                usuario = AlumnoCurso(cedula,nombre,correo,programa)
+            elif programa == Programa_Academico.Diplomado:
+                usuario = AlumnoDiplomado(cedula,nombre,correo,programa)
+            else:
+                usuario = AlumnoBootcamp(cedula,nombre,correo,programa)
 
             Crear_Alumnos_txt(usuario)
 
@@ -198,9 +213,9 @@ while opcion != '7':
             
         case '5':
             for i in range(len(Alumnos_registrados)):
-                Alumnos_registrados[i].Aprobacion()
+                
 
-                if Alumnos_registrados[i].aprobado:
+                if Alumnos_registrados[i].Aprobacion():
                     texto_certificado = f'{len(Alumno.Aprobados) + 1}. [{Alumnos_registrados[i].cedula}] {Alumnos_registrados[i].nombre} \n  -PROGRAMA : {Alumnos_registrados[i].programa_academico.name.lower()}\n  -PROMEDIO FINAL : {round(Alumnos_registrados[i].promedio, 2)} \n  -ESTATUS : APROBADO\n\n\n'
 
                     Alumno.Aprobados.append(texto_certificado)   
