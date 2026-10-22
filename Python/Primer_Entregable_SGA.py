@@ -1,36 +1,13 @@
-from python.Primer_Entregable_Clase_SGA import Alumno, Profesor, Programa_Academico, AlumnoCurso, AlumnoBootcamp,AlumnoDiplomado
+from Primer_Entregable_Clase_SGA import Alumno, Profesor, Programa_Academico, AlumnoCurso, AlumnoBootcamp,AlumnoDiplomado , GestorArchivos
+from collections import deque
 
 import os
 os.system('cls')
 
 
-def Crear_Alumnos_txt(objeto):
-    with open('Alumnos.txt', 'a', encoding='utf-8') as archivo:
-        archivo.write(f'{objeto.cedula} , {objeto.nombre} , {objeto.correo} , {objeto.programa_academico.name}\n')
 
 
-
-def Actualizar_Alumnos_txt(objeto, cedula):
-    lista_linea = []
-    with open('Alumnos.txt', 'r', encoding='utf-8') as archivo:
-        lista_linea = archivo.readlines()
-
-    for i in range(len(lista_linea)):
-        if cedula in lista_linea[i]:
-            linea_base = f'{objeto.cedula} , {objeto.nombre} , {objeto.correo} , {objeto.programa_academico.name}'
-            
-            if len(objeto.lista_notas) > 0:
-                notas_str = " , ".join(str(nota) for nota in objeto.lista_notas)
-                lista_linea[i] = f'{linea_base} , {notas_str}\n'
-            else:
-                lista_linea[i] = f'{linea_base}\n'
-
-    with open('Alumnos.txt', 'w', encoding='utf-8') as archivo:
-        archivo.writelines(lista_linea)
-
-
-
-def revisar_cedula(cedula_solicitada : str, objetos : list[object]) -> bool:
+def revisar_cedula(cedula_solicitada : str, objetos : list[Alumno]) -> bool:
     cedulas = []
     for i in range(len(objetos)):
         cedulas.append(objetos[i].cedula)
@@ -41,60 +18,14 @@ def revisar_cedula(cedula_solicitada : str, objetos : list[object]) -> bool:
         return False        
         
 
-def recibir_Alumnostxt():
-    lista_obj = []
-    with open('Alumnos.txt', 'r', encoding='utf-8') as archivo:
-    
-        for linea in archivo:
-            linea = linea.strip()
-                
-            fila = [elemento.strip() for elemento in linea.split(',')]
-            
-                
-            cedula = fila[0]
-            nombre = fila[1]
-            email = fila[2]
-            curso = fila[3]
 
-            notas = [float(nota) for nota in fila[4:]]
-            if curso.lower() == 'curso':
-                usuario = AlumnoCurso(cedula,nombre,email,Programa_Academico.Curso,notas)
-            elif curso.lower() == 'diplomado':
-                usuario = AlumnoDiplomado(cedula,nombre,email,Programa_Academico.Diplomado,notas)
-            if curso.lower() == 'bootcamp':
-                usuario = AlumnoBootcamp(cedula,nombre,email,Programa_Academico.Bootcamp,notas)
-            lista_obj.append(usuario)
-
-        
-    return lista_obj
-
-
-def recibir_Profesorestxt():
-    lista_obj_profesor = []
-    
-    with open('Profesores.txt', 'r', encoding='utf-8') as archivo:
-        for linea in archivo:
-            linea = linea.strip()
-            if not linea:  
-                continue
-                
-            fila = [elemento.strip() for elemento in linea.split(',')]
-                
-            cedula = fila[0]
-            nombre = fila[1]
-            email = fila[2]
-            especialidad = fila[3]
-            materia = fila[4]
-
-            usuario = Profesor(cedula, nombre, email, especialidad, materia) 
-            lista_obj_profesor.append(usuario)
-
-        
-    return lista_obj_profesor
 
 opcion : str = '0'
-Alumnos_registrados = recibir_Alumnostxt()
-Profesores_registrados =recibir_Profesorestxt()
+historial_cedulas = deque()
+archivos = GestorArchivos()
+
+archivos.recibirAlumnostxt()
+archivos.recibirProfesorestxt()
 
 while opcion != '7':
     print("==================================================")
@@ -113,7 +44,6 @@ while opcion != '7':
 
     match (opcion):
         case '1':
-            usuario = None
             os.system('cls')
             cedula = input('Ingrese la cedula del alumno: ')
             nombre = input('Ingrese el nombre del alumno: ')
@@ -121,42 +51,49 @@ while opcion != '7':
 
             os.system('cls')
             print('->Curso -- 1\n->Diplomado -- 2\n->Bootcamp -- 3\n')
-            programa = Programa_Academico(int(input('Ingrese la opcion: ')))
+            programa = input('Ingrese la opcion: ')
 
-            if programa == Programa_Academico.Curso:
-                usuario = AlumnoCurso(cedula,nombre,correo,programa)
-            elif programa == Programa_Academico.Diplomado:
-                usuario = AlumnoDiplomado(cedula,nombre,correo,programa)
-            else:
-                usuario = AlumnoBootcamp(cedula,nombre,correo,programa)
+            while programa != "1" and programa !="2" and programa !="3":
+                os.system('cls')
+                print("ERROR, el nuemro ingresado es distinto a 1 2 o 3\n\n")
+                print('->Curso -- 1\n->Diplomado -- 2\n->Bootcamp -- 3\n')
+                programa = input('Ingrese la opcion: ')
 
-            Crear_Alumnos_txt(usuario)
+            usuario = None
+            if int(programa) == 1:
+                usuario = AlumnoCurso(cedula,nombre,correo,)
+            elif int(programa) == 2:
+                usuario = AlumnoDiplomado(cedula,nombre,correo)
+            elif int(programa) == 3:
+                usuario = AlumnoBootcamp(cedula,nombre,correo)
+
+            archivos.listaAlumnos.append(usuario)
+            archivos.aniadirAlumno(usuario)
 
             os.system('cls')
-            Alumnos_registrados.append(usuario)
+            
             print('Alumno Registrado con exito')
             print('\n')
 
         case '2':
             os.system('cls')
-            cedula = input('Ingrese la cedula del profesor: ')
-            nombre = input('Ingrese el nombre del profesor: ')
-            correo = input('Ingrese el correo del profesor: ')
-            especialidad = input('Ingrese la especialidad academica del profesor: ')
-            materia = input('Ingrese la materia del profesor: ')
+            cedula : str = input('Ingrese la cedula del profesor: ')
+            nombre : str = input('Ingrese el nombre del profesor: ')
+            correo : str = input('Ingrese el correo del profesor: ')
+            especialidad : str = input('Ingrese la especialidad academica del profesor: ')
+            materia : str = input('Ingrese la materia del profesor: ')
             
-            usuario = Profesor(cedula,nombre,correo,especialidad,materia)
+            usuario : Profesor = Profesor(cedula,nombre,correo,especialidad,materia)
             
-            with open ('Profesores.txt' , 'a') as archivo:    
-                archivo.write(f'{usuario.cedula} , {usuario.nombre} , {usuario.correo} , {usuario.Especilidad_academica} , {usuario.Materia_asignada} \n')
+            archivos.aniadirProfesorestxt(usuario)
 
             os.system('cls')
-            Profesores_registrados.append(usuario)
+            archivos.listaProfesores.append(usuario)
             print('Profesor registrado con exito')
             print('\n')
 
         case '3':
-            if len(Alumnos_registrados) == 0:
+            if len(archivos.listaAlumnos) == 0:
 
                 os.system('cls')
                 print('No hay alumnos registrados')
@@ -167,103 +104,88 @@ while opcion != '7':
                 os.system('cls')
                 print('Alumnos registrados por el momento')
 
-                for i in range(len(Alumnos_registrados)):
-                    print(f'{Alumnos_registrados[i].cedula} -- {Alumnos_registrados[i].nombre}')
+                for i in range(len(archivos.listaAlumnos)):
+                    print(f'{archivos.listaAlumnos[i].cedula} -- {archivos.listaAlumnos[i].nombre}')
 
                 cedula_solicitada = input('Ingrese la cedula del alumno a el que va a registrar notas: ')
 
-                if revisar_cedula(cedula_solicitada, Alumnos_registrados):
-                    nota = float(input('Ingrese la nota del alumno: '))
+                if revisar_cedula(cedula_solicitada, archivos.listaAlumnos):
+                    for i in range(len(archivos.listaAlumnos)):
+                        if cedula_solicitada == archivos.listaAlumnos[i].cedula:
+                            nota = float(input('Ingrese la nota del alumno: ')) 
+                            if (not(len(archivos.listaAlumnos[i].lista_notas) == 3)) and nota > 0 and nota <= 20:
+                                archivos.listaAlumnos[i].Registrar_nota(nota)
 
-                    for i in range(len(Alumnos_registrados)):
-                        if cedula_solicitada == Alumnos_registrados[i].cedula:
-                            Alumnos_registrados[i].Registrar_nota(nota)
+                                archivos.actualizarAlumnostxt(archivos.listaAlumnos[i] , i)
+                                historial_cedulas.append(cedula_solicitada)
+                                break
+                            else:
+                                os.system('cls')
+                                print(f"ERROR nota invalida / alumno con mas de 3 notas")
+                                break
 
-                            Actualizar_Alumnos_txt(Alumnos_registrados[i] , cedula_solicitada)
+                            
 
                 else:
                     os.system('cls')
                     print('Cedula no encontrada')
-                    continue
 
             print('\n')
 
         case '4':
             os.system('cls')
-            print('Alumnos registrados por el momento')
-        
-            for i in range(len(Alumnos_registrados)):
-                print(f'{Alumnos_registrados[i].cedula} -- {Alumnos_registrados[i].nombre}')
-        
-            cedula_solicitada : str = input('Ingrese la cedula del alumno a el que va a deshacer la ultima nota registrada: ')
-
-            if revisar_cedula(cedula_solicitada, Alumnos_registrados):
-                for i in range(len(Alumnos_registrados)):
-                    if cedula_solicitada == Alumnos_registrados[i].cedula:
-                        Alumnos_registrados[i].Deshacer_nota()
-                        Actualizar_Alumnos_txt(Alumnos_registrados[i], cedula_solicitada)
+            if len(historial_cedulas) == 0:
+                os.system('cls')
+                print('ERROR no hay mas alumnos con notas')
 
             else:
-                os.system('cls')
-                print('Cedula no encontrada')
-                print('\n')
-                continue
+                ultima_cedula : str = historial_cedulas.pop()
+                for i in range(len(archivos.listaAlumnos)):
+                    if ultima_cedula == archivos.listaAlumnos[i].cedula:
+                        archivos.listaAlumnos[i].Deshacer_nota()
+                        archivos.actualizarAlumnostxt(archivos.listaAlumnos[i] , i)
+                        break
 
             print('\n')
             
         case '5':
-            for i in range(len(Alumnos_registrados)):
-                
+            os.system('cls')
+            archivos.Aprobados.clear()
+            archivos.crearCertificadostxt()
+            print("Cola generada con exito")
 
-                if Alumnos_registrados[i].Aprobacion():
-                    texto_certificado = f'{len(Alumno.Aprobados) + 1}. [{Alumnos_registrados[i].cedula}] {Alumnos_registrados[i].nombre} \n  -PROGRAMA : {Alumnos_registrados[i].programa_academico.name.lower()}\n  -PROMEDIO FINAL : {round(Alumnos_registrados[i].promedio, 2)} \n  -ESTATUS : APROBADO\n\n\n'
-
-                    Alumno.Aprobados.append(texto_certificado)   
-
-            if len(Alumno.Aprobados) > 0:      
-                with open ('certificados_pendientes.txt' , 'w') as archivo:
-                    for i in range(len(Alumno.Aprobados)):
-                        archivo.write(f'{Alumno.Aprobados[i]} \n')
-                        continue
-
-                os.system('cls')
-                print('\n')
-                print('Cola generada con exito')
-
-            else:
-                os.system('cls')
-                print('Ningun alumno ha aprobado aun')
-                print('\n')
 
         case '6': 
             os.system('cls')
             print('Alumnos registrados: \n')
 
-            for i in range(len(Alumnos_registrados)):
+            for i in range(len(archivos.listaAlumnos)):
                 estado = ''
-                Alumnos_registrados[i].Calculo_promedio()
+                archivos.listaAlumnos[i].Calculo_promedio()
                 
-                if Alumnos_registrados[i].Aprobacion():
+                if archivos.listaAlumnos[i].Aprobacion():
                     estado = 'APROBADO'
                 else:
                     estado = 'REPROBADO'
 
-                print(f'---> {Alumnos_registrados[i].cedula} - {Alumnos_registrados[i].nombre} - {Alumnos_registrados[i].correo} - {Alumnos_registrados[i].programa_academico} - Notas: ')
+                print(f'---> {archivos.listaAlumnos[i].cedula} - {archivos.listaAlumnos[i].nombre} - {archivos.listaAlumnos[i].correo} - {archivos.listaAlumnos[i].programa} - Notas: ')
 
-                for notas in range(len(Alumnos_registrados[i].lista_notas)):
-                    print(f'{Alumnos_registrados[i].lista_notas[notas]}' ,end=' - ')      
+                for notas in range(len(archivos.listaAlumnos[i].lista_notas)):
+                    print(f'{archivos.listaAlumnos[i].lista_notas[notas]}' ,end=' - ')      
 
-                print(f'\n     PROMEDIO: {round(Alumnos_registrados[i].promedio,2)} - ESTADO: {estado}')
+                print(f'\n     PROMEDIO: {round(archivos.listaAlumnos[i].promedio,2)} - ESTADO: {estado}')
                 print('\n'*2)
             
             print('\n')
 
             print('Profesores registrados: \n')
-            
-            with open('Profesores.txt','r') as archivo:
-                lineas : list[str] = archivo.readlines()
-                for i in range(len(lineas)):
-                    print(f'--- {lineas[i]}\n')
+            if len(archivos.listaProfesores) > 0:
+                with open('Profesores.txt','r') as archivo:
+                    lineas : list[str] = archivo.readlines()
+                    for i in range(len(lineas)):
+                        print(f'--- {lineas[i]}\n')
+            else:
+                print("Sin profesores registrados")
             print('\n')
 
         case '7':
@@ -271,6 +193,8 @@ while opcion != '7':
             break
             
         case _:
-            print(f'ERROR: opcion invalida {opcion}, numeros del 1 al 7')
+            os.system("cls")
+            print(f'ERROR: opcion invalida {opcion}, numeros del 1 al 7 \n')
+            
 
         
