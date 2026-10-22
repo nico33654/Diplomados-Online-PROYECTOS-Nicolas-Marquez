@@ -1,0 +1,5 @@
+V-33,Nico,nico@gmail.com,DIPLOMADO,19,20,20
+V-34,Jose,j@gmail.com,BOOTCAMP,20,19,20
+V-24,Juan,ju@gmail.com,DIPLOMADO
+V-15,Maria,m@gmail.com,BOOTCAMP
+V-14,Mauricio,mau@gmail.com,CURSO,19,20,20

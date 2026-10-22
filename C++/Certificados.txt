@@ -1,0 +1,15 @@
+[V-33]Nico
+    -Programa:DIPLOMADO
+    -Promedio Final: 20
+    -Estatus: APROBADO
+
+[V-34]Jose
+    -Programa:BOOTCAMP
+    -Promedio Final: 20
+    -Estatus: APROBADO
+
+[V-14]Mauricio
+    -Programa:CURSO
+    -Promedio Final: 20
+    -Estatus: APROBADO
+
