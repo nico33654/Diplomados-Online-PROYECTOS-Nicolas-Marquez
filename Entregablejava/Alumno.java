@@ -1,7 +1,6 @@
-package Entregablajava;
-
-import java.util.ArrayDeque;
-import java.util.Deque;
+package Entregablejava;
+import java.util.ArrayList;
+import java.util.Stack;
 
 enum Programa_Academico{
     CURSO,
@@ -10,9 +9,11 @@ enum Programa_Academico{
 }
 
 public abstract class Alumno extends Persona {
-    Deque<Double> Lista_notas = new ArrayDeque<>();
+    static ArrayList<String> Aprobados = new ArrayList<>();
+    Stack<Double> Lista_notas = new Stack<>();
     Double promedio = 0.0;
     boolean aprobado = false;
+    Programa_Academico programa;
 
     public Alumno(String nombre, String cedula, String correo) {
         super(nombre, cedula, correo);
@@ -21,6 +22,7 @@ public abstract class Alumno extends Persona {
     abstract boolean Aprobacion();
 
     void Calculo_promedio(){
+        promedio = 0.0;
         for (Double nota : Lista_notas){
             promedio += nota;
         }
@@ -32,17 +34,23 @@ public abstract class Alumno extends Persona {
         System.out.println("Nota registrada con exito");
     }
 
-    void Deshacer_nota(Double nota){
+    void Deshacer_nota(){
         Lista_notas.pop();
         System.out.println("Nota eliminada con exito");
+    }
+    @Override
+    public String toString(){
+        String mensaje = "\n--> " + cedula + "-- "+ nombre;
+        return mensaje;
     }
 }    
 
 class AlumnoCurso extends Alumno{
-    Programa_Academico programa = Programa_Academico.CURSO;
+    
 
     public AlumnoCurso(String nombre, String cedula, String correo) {
         super(nombre, cedula, correo);
+        this.programa = Programa_Academico.CURSO;
     }
 
     @Override
@@ -55,10 +63,10 @@ class AlumnoCurso extends Alumno{
 }
 
 class AlumnoDiplomado extends Alumno{
-    Programa_Academico programa = Programa_Academico.DIPLOMADO;
 
     public AlumnoDiplomado(String nombre, String cedula, String correo) {
         super(nombre, cedula, correo);
+        this.programa = Programa_Academico.DIPLOMADO;
     }
 
     @Override
@@ -71,19 +79,20 @@ class AlumnoDiplomado extends Alumno{
 }
 
 class AlumnoBootcamp extends Alumno{
-    Programa_Academico programa = Programa_Academico.BOOTCAMP;
+    
 
     public AlumnoBootcamp(String nombre, String cedula, String correo) {
         super(nombre, cedula, correo);
+        this.programa = Programa_Academico.BOOTCAMP;
     }
 
     @Override
     boolean Aprobacion(){
         for(Double nota : Lista_notas){
-            if(nota<=14){
-                aprobado = false;
-            }else{
+            if(nota>=14 && Lista_notas.size() == 3){
                 aprobado = true;
+            }else{
+                aprobado = false;
             }
         }
         return aprobado;

@@ -221,7 +221,7 @@ while opcion != '7':
                     Alumno.Aprobados.append(texto_certificado)   
 
             if len(Alumno.Aprobados) > 0:      
-                with open ('certificados_pendientes.txt' , 'a') as archivo:
+                with open ('certificados_pendientes.txt' , 'w') as archivo:
                     for i in range(len(Alumno.Aprobados)):
                         archivo.write(f'{Alumno.Aprobados[i]} \n')
                         continue

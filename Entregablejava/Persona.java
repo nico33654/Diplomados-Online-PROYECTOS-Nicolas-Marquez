@@ -1,4 +1,4 @@
-package Entregablajava;
+package Entregablejava;
 
 public class Persona {
     String nombre;

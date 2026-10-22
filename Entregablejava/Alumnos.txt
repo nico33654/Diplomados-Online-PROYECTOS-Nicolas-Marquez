@@ -1,0 +1,6 @@
+V-33 , Nico , nico@gmail.com , BOOTCAMP , 20.0 , 19.0 , 10.0
+V-6 , Juan , juan@gmail.com , CURSO , 15.0 , 16.0 , 18.0
+V-15 , Oscar , Oscar2gmail.com , DIPLOMADO , 20.0 , 19.0 , 20.0
+V-12 , Juan , juan@2gmail.com , DIPLOMADO , 20.0
+V-16 , juan , juan@3gmail.com , CURSO , 14.0
+V-30 , Maria , mr@gmail.com , CURSO
